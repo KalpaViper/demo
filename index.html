@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anime Watcher</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="fss.css">
+  <style>
+    /* importing google font -open sans */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+}
+
+/*color variables for light theme */
+:root {
+    --white-color: #fff;
+    --black-color: #000;
+    --light-white-colo: #f0f0f0;
+    --light-gray-color: #e5e5e5;
+    --border-color: #d4d4d4;
+    --primary-color: #3b82f6;
+    --secondary-color: #404040;
+    --overlay-dark-color: rgba(0, 0, 0, 0.6);
+}
+
+.container {
+    display: flex;
+    flex-direction:column;
+    max-height: 100vh;
+}
+
+header, .category-list {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--white-color);
+}
+
+.navbar {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    justify-content: space-between;
+}
+
+.container :where(.nav-section, .search-form, .nav-logo) {
+    display: flex;
+    align-items: center;
+}
+
+.container .nav-section{
+    gap: 1rem;
+}
+
+.container :where(.logo-image, .user-image) {
+    width: 42px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.container .nav-button {
+    border: none;
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background: none;
+}
+
+.container .nav-button:hover {
+    background-color: var(--light-gray-color);
+}
+
+.container .nav-button i {
+    display: flex;
+    font-size: 1.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.container .nav-logo{
+    display: flex;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.navbar .nav-logo .logo-text {
+    font-size: 1.25rem;
+    color: var(--black-color);
+}
+
+.navbar .nav-center {
+    display: flex;
+    width: 100%;
+    height: 40px;
+    justify-content: center;
+}
+
+.navbar .search-form {
+    max-width: 550px;
+    flex: 1;
+    height: 40px;
+}
+
+.navbar .search-form .search-input {
+    width: 100%;
+    height: 100%;
+    padding: 0 1rem;
+    outline: none;
+    font-size: 1rem;
+    border-radius: 3.1rem 0 0 3.1rem;
+    border: 1px solid var(--border-color);
+}
+
+.navbar .search-form .search-button {
+    width: auto;
+    padding: 0 1.25rem;
+    border-radius: 0 3.1rem 3.1rem 0;
+    border: 1px solid var(--border-color);
+    border-left: 0;
+}
+
+.main-layout {
+    display: flex;
+    overflow-y: auto;
+}
+
+.main-layout .sidebar {
+    width: 280px;
+    padding: 0 0.7rem 0;
+    background: var(--white-color);
+}
+
+body.sidebar-hidden .main-layout .sidebar {
+    width: 0;
+    padding: 0;
+}
+
+.main-layout .sidebar .nav-left {
+    display: none;
+    padding: 0 0.3rem;
+}
+
+.sidebar .link-container {
+    overflow-y: auto;
+    padding: 1rem 0 2rem;
+    scrollbar-width: thin;
+    height: calc(100vh - 60px);
+    scrollbar-color: transparent transparent;
+}
+
+.sidebar .link-container:hover {
+    scrollbar-color: #a6a6a6 transparent;
+}
+
+.sidebar .link-section .link-item {
+   display: flex;
+   align-items: center;
+   font-size: 0.938rem;
+   white-space: nowrap;
+   padding: 0.37rem 0.75rem;
+   margin-bottom: 0.25rem;
+   color: var(--black-color);
+   border-radius: 0.5rem;
+   text-decoration: none;   
+}
+
+.sidebar .link-section .link-item:hover {
+    background: var(--light-gray-color);
+}
+
+.sidebar .link-section .link-item i {
+    font-size: 1.2rem;
+    margin-right: 0.63rem;
+}
+
+.sidebar .link-section .section-title {
+    font-size: 0.938;
+    font-weight: 600;
+    color: var(--black-color);
+    margin: 1rem 0 0.5rem 0.5rem;
+}
+
+.sidebar .section-separator {
+    height: 1px;
+    margin: 0.625rem 0;
+    background: var(--light-gray-color);
+}
+
+.main-layout .content-wrapper {
+    padding: 0 1rem;
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.content-wrapper .category-list {
+    display:flex;
+    gap: 0.7rem;
+    overflow-x: auto;
+    padding: 0.75rem 0 0.7rem;
+    scrollbar-width: none;
+}
+
+.category-list .category-button {
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 0.4rem 0.7rem;
+    border-radius: 0.5rem;
+    background: var(--light-gray-color);
+}
+
+.category-list .category-button.active {
+    color: var(--white-color);
+    background: var(--black-color);
+    pointer-events: none;
+}
+
+.category-list .category-button:hover {
+    background: var(--border-color);
+}
+
+.content-wrapper .video-list {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem 0 4rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.video-list .video-card {
+    text-decoration: none;
+}
+
+.video-list .video-card .video-info {
+    display: flex;
+    gap: 0.7rem;
+    padding: 0.7rem 0.5rem;
+}
+
+.video-list .video-card .thumbnail-container {
+    position: relative;
+}
+
+.video-list .video-card .thumbnail {
+    width: 100%;
+    border-radius: 0.5rem;
+    aspect-ratio: 16 /9;
+}
+
+.video-list .video-card .duration {
+    position: absolute;
+    right: 0.65rem;
+    bottom: 0.8rem;
+    color: #fff;
+    font-size: 0.875rem;
+    padding: 0 0.3rem;
+    border-radius: 0.3rem;
+    background: var(--overlay-dark-color);
+}
+
+.video-list .video-card .icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.video-list .video-card .title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--black-color);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.video-list .video-card .title:hover {
+    color: var(--primary-color);
+}
+
+.video-list .video-card p {
+    font-size: 0.875rem;
+    color: var(--secondary-color); 
+}
+
+.video-list .video-card .channel-name {
+    margin: 0.25rem 0 0.15rem;
+}
+
+/*responsive media quary code code for small devices */
+@media (max-width: 768px) {
+    .main-layout .sid
+
+    .main-layout .sidebar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 20;
+        height: 100vh;
+        transition: 0.2s ease;
+    }
+
+body.sidebar-hidden .main-layout .sidebar {
+    left: -280px;
+}
+
+.main-layout .sidebar .nav-left {
+   display: flex;
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!--header /Navbar-->
+    <header>
+      <nav class="navbar">
+        <div class="nav-section nav-left">
+          <button class="nav-button menu-button">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <a href="#" class="nav-logo">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg" alt="Logo" class="logo-image" >
+            <h2 class="logo-text">Ar_define</h2>
+          </a>
+        </div>
+
+        <div class="nav-section nav-center">
+          <form action="#" class="search-form">
+            <input type="search" placeholder="search" required class="search-input">
+            <button class="nav-button search-button">
+              <i class="fa-brands fa-searchengin"></i>
+            </button>
+          </form>
+          <button class="nav-button mic-button">
+            <i class="fa-solid fa-microphone"></i>
+          </button>
+        </div>
+ 
+      <form action="#" class="theme-form">
+        <div class="nav-section nav-right"></div>
+        <button class="nav-button theme-button">
+          <i class="fa-regular fa-moon"></i>
+        </button>
+      </form>
+        <img src="https://i.pinimg.com/736x/ac/27/14/ac2714bcfcf26266752beb18d9201b51.jpg" alt="User Image" class="user-image">
+    </header>
+
+    <main class="main-layout">
+      <div class="screen-overlay"></div>
+
+      <!--slideber-->
+    <aside class="sidebar">
+      <!-- <div class="nav-section nav-left">
+        <button class="nav-button menu-button">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <a href="#" class="nav-logo">
+          <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg" alt="Logo" class="logo-image" >
+          <h2 class="logo-text">Ar_define</h2>
+        </a>
+      </div> -->
+
+      <div class="link-container">
+        <div class="link-section">
+          <a href="" class="link-item">
+            <i class="fa-solid fa-house"></i> Home
+          </a>
+          <a href="" class="link-item">
+            <i class="fa-brands fa-pied-piper-alt"></i> Short
+          </a>
+          <a href="" class="link-item">
+            <i class="fa-solid fa-coins"></i> Subscription
+          </a>
+        </div>
+        <div class="section-separator"></div>
+
+       <div class="link-section">
+         <h4 class="section-tittle">You</h4> 
+          <a href="" class="link-item">
+            <i class="fa-solid fa-user-secret"></i> Your channel
+          </a>
+          <a href="" class="link-item">
+            <i class="fa-solid fa-clock-rotate-left"></i> History
+          </a>
+          <a href="" class="link-item">
+            <i class="fa-regular fa-clock"></i> Watch later
+          </a>
+        </div>
+        <div class="section-separator"></div>
+
+        <div class="link-section">
+          <h4 class="section-tittle">Explore</h4> 
+           <a href="" class="link-item">
+            <i class="fa-solid fa-arrow-trend-up"></i> Trending
+           </a>
+           <a href="" class="link-item">
+            <i class="fa-solid fa-music"></i> Music
+          </a>
+           <a href="" class="link-item">
+            <i class="fa-solid fa-headset"></i> Gaming
+           </a>
+           <a href="" class="link-item">
+            <i class="fa-solid fa-medal"></i> Sports
+           </a>
+         </div>
+         <div class="section-separator"></div>
+
+      <div class="link-section">
+        <h4 class="section-tittle">More for Youtube</h4> 
+         <a href="" class="link-item">
+          <i class="fa-solid fa-user-plus"></i> Plus Feature
+         </a>
+         <a href="" class="link-item">
+          <i class="fa-solid fa-music"></i> Youtube Music
+        </a>
+         <a href="" class="link-item">
+          <i class="fa-solid fa-child-reaching"></i> Youtube Kids
+         </a>
+       </div>
+       <div class="section-separator"></div>
+
+       <div class="link-section"> 
+         <a href="" class="link-item">
+          <i class="fa-solid fa-gears"></i> Setting
+         </a>
+         <a href="" class="link-item">
+          <i class="fa-solid fa-bug"></i> Report
+        </a>
+         <a href="" class="link-item">
+          <i class="fa-solid fa-handshake-angle"></i> help
+         </a>
+         <a href="" class="link-item">
+          <i class="fa-solid fa-comments"></i> Feedback
+         </a>
+       </div>
+     </div>
+    </aside>
+
+    <div class="content-wrapper">
+      <!--category list-->
+      <div class="category-list">
+        <button class="category-button active">All</button>
+        <button class="category-button">Website</button>
+        <button class="category-button">Music</button>
+        <button class="category-button">Gaming</button>
+        <button class="category-button">Node.js</button>
+        <button class="category-button">Anime.content</button>
+        <button class="category-button">Anime.[AMV]</button>
+        <button class="category-button">Web.design</button>
+        <button class="category-button">Recently</button>
+        <button class="category-button">20min.ago</button>
+        <button class="category-button">Cool.song</button>
+        <button class="category-button">Dehari.baba</button>
+        <button class="category-button">Pojab.pajama</button>
+        <button class="category-button">Rude</button>
+      </div>
+       
+       <!--video list-->
+       <div class="video-list">
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/ewcmdlaupmjd5fybc3ak" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/uu4e173knjo3nezpfrz0" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/iqkb8cgnwmxf726nbv5f" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/kxffmhdda1ckim7b0ewr" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/wvvpfpycguhcht4vjpj6" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/rh5aiiv9za72uogigou4" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Anime Short [AMV] Epic Music Edit </h2>
+              <p class="channel-name">Ar.coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/qnilz2gygoa2sqonutea" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/kt4gyvyxpdrikgz9j6bk" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/xjpgz1jjjgqmfdj47dmw" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/janyvjlxtgujjspzhgvs" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/au4uycletubcjao2buwg" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/oeaxb1lf0yc9fhgwyr7z" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/x8jakniapno0wi2q5f9a" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+        <a href="#" class="video-card">
+          <div class="thumbnail-container">
+            <video src="https://fiverr-res.cloudinary.com/video/upload/t_fiverr_hd/f3ckfocmfynhfb5o2ibr" controls alt="Thumbnail" class="thumbnail"></video>
+            </div>
+          <div class="video-info">
+            <img src="https://i.pinimg.com/236x/4e/76/34/4e7634a1b277a01473c350a66e3596c0.jpg"  alt="channel logo" class="icon">
+            <div class="video-ditails">
+              <h2 class="title">Top Anime [AMV] Creater Music</h2>
+              <p class="channel-name">Ar.Coder</p>
+              <p class="view">27K Views • 4 months ago</p>  
+            </div>
+          </div>
+        </a>
+       </div>
+    </div>
+  </main>
+  </div>
+
+  <script>
+    const menuButton = document.querySelectorAll(".menu-button");
+
+menuButton.forEach(button => {
+  button.addEventListener("click", ()=> {
+    document.body.classList.toggle("sidebar-hidden");
+  });
+});
+  </script>
+</body>
+</html>
